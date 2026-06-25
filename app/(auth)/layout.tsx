@@ -1,7 +1,7 @@
-import { HERO_IMAGE } from "@/lib/constants";
+//import { HERO_IMAGE } from "@/lib/constants";
 import { Layers } from "lucide-react";
-import Image from "next/image";
-import { Metadata } from "react";
+//import Image from "next/image";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Login",
@@ -22,7 +22,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         <span className="font-bold text-[32px] text-white">A Better Way to Store, Organize, and Access Your Files</span>
                         <span className="text-white">Securely upload, manage, and access your files from any device, anytime.</span>
 
-                        <Image src={HERO_IMAGE} width={100} height={100} alt="hero-image" className="mt-15" />
+                        {/*<Image src={null} width={100} height={100} alt="hero-image" className="mt-15" />*/}
+                        
                     </div>
                 </div>
             </section>

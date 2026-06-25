@@ -7,3 +7,10 @@ export type CustomInputProps = {
     inputName: string;
     classNames?: string;
 };
+
+export type IButtonLoadingProps = {
+    loading: boolean;
+    onClick: () => void;
+    label?: string;
+    classNames?: string;
+};
