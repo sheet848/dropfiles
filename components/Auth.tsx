@@ -6,7 +6,8 @@ import CustomInput from "./CustomInput"
 import { Mail, UserRoundPenIcon } from "lucide-react"
 import ButtonWithLoading from "./ButtonWithLoading"
 import { isValidEmail } from "@/lib/utils"
-import { createAccount } from "@/lib/appwrite/user.actions"
+import { createAccount, signInUser } from "@/lib/appwrite/user.actions"
+import OTPModal from "./OTPModal"
 
 const Auth = () => {
     const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ const Auth = () => {
         const { name, value } = e.target;
         setFormData((prev) => {
             return {
-                ...prev, 
+                ...prev,
                 [name]: value,
             };
         });
@@ -54,7 +55,7 @@ const Auth = () => {
         try {
             setLoading(true);
 
-            const user = await createAccount({ fullName, email: registerEmail });
+            const user = tabValue === "signIn" ? await signInUser(email) : await createAccount({ fullName, email: registerEmail });
             if (user.accountId) {
                 setAccountId(user.accountId);
             }
@@ -68,7 +69,7 @@ const Auth = () => {
         }
     }
 
-    console.log("print:", {accountId, errorMessage});
+    //console.log("print:", {accountId, errorMessage});
 
     return (
         <div className="flex flex-col items-center justify-center h-full">
@@ -95,7 +96,14 @@ const Auth = () => {
                     </TabsContent>
                 </Tabs>
                 <ButtonWithLoading loading={loading} onClick={handleContinueClick} />
+                {errorMessage ? <span className="bg-froly/10 font-medium py-4 px-8 text-froly rounded-xl w-full flex items-center justify-center mt-8">{errorMessage}</span> : null}
             </div>
+
+            { accountId ? (
+                <OTPModal
+                    accountId={accountId}
+                    email={tabValue === "signIn" ? email : formData.registerEmail}
+                />) : null }
         </div>
     );
 }
