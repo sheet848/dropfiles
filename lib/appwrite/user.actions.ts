@@ -4,6 +4,8 @@ import { ID, Query } from "node-appwrite";
 import { createAdminClient } from ".";
 import { appwriteConfig } from "./appwriteConfig";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { parseObj } from "../utils";
 
 // create Account (fullName, email)
 // get existing user by email
@@ -121,5 +123,62 @@ export const verifySecret = async ({ accountId, password }: { accountId: string;
 
     } catch (error) {
         console.log("Failed to verify OTP", error);
+    }
+}
+
+// cookieStore -> appwrite-session
+// call createAdminClient() => account
+// account -> delete the session by passing the id
+// clear the cookie -> appwrite session and apppwrite-user-id
+
+export const signOutuser = async () => {
+    const cookieStore = await cookies();
+
+    try {
+        const sessionId = cookieStore.get("appwrite-session");
+        if (sessionId?.value) {
+            const { account } = await createAdminClient();
+
+            try {
+                await account.deleteSession({ sessionId: sessionId.value });
+            } catch (error) {
+                console.log("Failed to delete the session from appwrite", error);
+            }
+        }
+    } catch (error) {
+        console.log("Error during logout", error);
+    } finally {
+        cookieStore.delete("appwrite-session");
+        cookieStore.delete("appwrite-user-id");
+    }
+
+    redirect("/auth");
+}
+
+// userId from cookieStore
+// createAdminClient() -> database
+// query in the database with the userId and return the user
+export const getCurrentUser = async () => {
+    try {
+        const cookieStore = await cookies();
+        const userId = cookieStore.get("appwrite-user-id");
+
+        if(!userId?.value) {
+            return null;
+        }
+
+        const { databases } = await createAdminClient();
+
+        const user = await databases.listRows({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.usersCollectionId,
+            queries: [Query.equal("accountId", [userId.value])]
+        });
+
+        return user.total > 0 ? parseObj(user.rows[0]) : null;
+
+    } catch (error) {
+        console.log("Error while fetching the current user", error);
+        return null;
     }
 }
