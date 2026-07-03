@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { appwriteConfig } from "./appwrite/appwriteConfig";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -144,4 +145,12 @@ export const getFileType = (fileName: string) => {
 
 export const convertFileToUrl = (file: File) => {
   return URL.createObjectURL(file);
+};
+
+export const constructFileUrl = (bucketFileId: string) => {
+  return `${appwriteConfig.endpointUrl}/storage/buckets/${appwriteConfig.bucketId}/files/${bucketFileId}/view?project=${appwriteConfig.projectId}`;
+};
+
+export const constructDownloadUrl = (bucketFileId: string) => {
+  return `${appwriteConfig.endpointUrl}/storage/buckets/${appwriteConfig.bucketId}/files/${bucketFileId}/download?project=${appwriteConfig.projectId}`;
 };

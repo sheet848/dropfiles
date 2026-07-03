@@ -42,3 +42,5 @@ export const SIDEBAR_ITEMS = [
 export const HERO_IMAGE = "";
 
 export const USER_ICON = "https://png.pngtree.com/png-vector/20250514/ourlarge/pngtree-3d-profile-icon-png-image_16279302.png";
+
+export const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
