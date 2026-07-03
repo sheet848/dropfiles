@@ -6,6 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import { getCurrentUser } from "@/lib/appwrite/user.actions";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
     title: "DropFiles",
@@ -25,9 +26,11 @@ const Layout = async ({ children }: { children: React.ReactNode}) => {
             <Sidebar fullName={user?.fullName} fileSize="52.2" />
 
             <section className="flex h-full flex-1 flex-col">
-                <Header />
+                <Header ownerId={user.ownerId} accountId={user.accountId} />
                 <div className="bg-gray-50 shadow m-4 h-full rounded-2xl">{ children }</div>
             </section>
+
+            <Toaster />
         </main>
     )
 }

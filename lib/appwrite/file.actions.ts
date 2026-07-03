@@ -1,10 +1,12 @@
+"use server";
 // uploadFile
 // file, ownerId, accountId, path
 
 import { ID } from "node-appwrite";
 import { createAdminClient } from ".";
-import { getFileType } from "../utils";
+import { constructFileUrl, getFileType, parseObj } from "../utils";
 import { appwriteConfig } from "./appwriteConfig";
+import { revalidatePath } from "next/cache";
 
 // storage and databases => createAdminClient()
 // create the file in the storage -> bucketId, fileId, file
@@ -35,7 +37,7 @@ export const uploadFile = async ({
         const fileDocument = {
             type: getFileType(bucketFile.name).type,
             name: bucketFile.name,
-            url: "",
+            url: constructFileUrl(bucketFile.$id),
             extension: getFileType(bucketFile.name).extension,
             size: bucketFile.sizeOriginal,
             owner: ownerId,
@@ -50,8 +52,14 @@ export const uploadFile = async ({
             rowId: ID.unique(),
             data: fileDocument,
         }).catch(async (error: unknown) => {
-            
-        })
+            await storage.deleteFile({
+                bucketId: appwriteConfig.bucketId,
+                fileId: bucketFile.$id,
+            });
+            console.log("Failed to create file", error);
+        });
+        revalidatePath(path);
+        return parseObj(newFile);
     } catch (error) {
        console.log("Failed to upload file", error); 
     }

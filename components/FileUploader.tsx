@@ -1,23 +1,55 @@
+"use client";
 import { UploadCloud, X } from "lucide-react"
 import {useCallback, useState} from "react"
 import { Button } from "./ui/button"
 import {useDropzone} from "react-dropzone"
 import Preview from "./Preview"
 import { convertFileToUrl, getFileType } from "@/lib/utils"
+import { MAX_FILE_SIZE } from "@/lib/constants"
+import { toast } from "sonner"
+import { uploadFile } from "@/lib/appwrite/file.actions"
+import { usePathname } from "next/navigation"
 
-const FileUploader = () => {
+const FileUploader = ({ ownerId, accountId }: { ownerId: string; accountId: string }) => {
 
     const [files, setFiles] = useState<File[]>([]);
+    const path = usePathname();
 
     const handleFilterFiles = useCallback((fileName: string) => {
         const filteredFiles = files.filter((file) => file.name !== fileName);
         setFiles(filteredFiles);
     }, [files]);
 
-    const onDrop = useCallback((acceptedFiles: File[]) => {
+    const onDrop = useCallback( async(acceptedFiles: File[]) => {
     // Do something with the files
     setFiles(acceptedFiles);
-  }, []);
+
+    const uploadedFiles = acceptedFiles.map(async (file) => {
+      if (file.size > MAX_FILE_SIZE) {
+        handleFilterFiles(file.name);
+
+        toast.error(`Failed to upload ${file.name}`, {
+          description: (
+            <span className="text-black">
+              <span className="font-semibold">{file.name} is too large. Max file size is 50 MB.</span>
+            </span>
+          ),
+        });
+        return;
+      }
+
+      return uploadFile({ file, ownerId, accountId, path }).then((uploadedFile) => {
+        if (uploadedFile) {
+          handleFilterFiles(file.name);
+        }
+      })
+
+    });
+
+    await Promise.all(uploadedFiles);
+
+  }, [handleFilterFiles, path]);
+
   const {getRootProps, getInputProps} = useDropzone({onDrop});
 
   const handleRemoveFile = (
