@@ -2,11 +2,12 @@
 // uploadFile
 // file, ownerId, accountId, path
 
-import { ID } from "node-appwrite";
+import { ID, Models, Query } from "node-appwrite";
 import { createAdminClient } from ".";
 import { constructFileUrl, getFileType, parseObj } from "../utils";
 import { appwriteConfig } from "./appwriteConfig";
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "./user.actions";
 
 // storage and databases => createAdminClient()
 // create the file in the storage -> bucketId, fileId, file
@@ -40,10 +41,11 @@ export const uploadFile = async ({
             url: constructFileUrl(bucketFile.$id),
             extension: getFileType(bucketFile.name).extension,
             size: bucketFile.sizeOriginal,
-            owner: ownerId,
+            owner: [ownerId],
             accountId,
             users: [],
             bucketFileId: bucketFile.$id,
+            ownerId,
         };
 
         const newFile = await databases.createRow({
@@ -64,3 +66,65 @@ export const uploadFile = async ({
        console.log("Failed to upload file", error); 
     }
 }
+
+// getFiles(types, query, filter)
+
+// databases => createAdminClient()
+// currentUser => getCurrentUser()
+// query in the database => owner(currentUserId) or users(email)
+
+const createQueries = (
+    currentUser: Models.DefaultRow,
+    types: string[],
+    query: string,
+    filter: string,
+) => {
+    const queries = [
+        Query.or([
+            Query.equal("ownerId", [currentUser.$id]),
+            Query.contains("users", [currentUser.email]),
+        ]),
+    ];
+
+    // types
+    if (types.length > 0) {
+        queries.push(Query.equal("type", types));
+    }
+
+    // query
+    // filter
+
+    return queries;
+};
+
+export const getFiles = async ({
+    types = [],
+    query,
+    filter = "$createdAt-asc",
+}: {
+    types: string[];
+    query: string;
+    filter?: string;
+}) => {
+    const { databases } = await createAdminClient();
+
+    try {
+        const currentUser = await getCurrentUser();
+
+        if (!currentUser) {
+            console.log("User not found");
+            return;
+        }
+
+        const queries = createQueries(currentUser, types, query, filter);
+        const files = await databases.listRows({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.filesCollectionId,
+            queries,
+        });
+
+        return parseObj(files);
+    } catch (error) {
+        console.log("Failed to retrive files", error);
+    }
+};

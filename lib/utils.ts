@@ -154,3 +154,18 @@ export const constructFileUrl = (bucketFileId: string) => {
 export const constructDownloadUrl = (bucketFileId: string) => {
   return `${appwriteConfig.endpointUrl}/storage/buckets/${appwriteConfig.bucketId}/files/${bucketFileId}/download?project=${appwriteConfig.projectId}`;
 };
+
+export const getFileTypeParams = (type: string) => {
+  switch (type) {
+    case "documents":
+      return ["document"];
+    case "images":
+        return ["image"];
+    case "media":
+        return ["audio", "video"];
+    case "others":
+        return ["other"];
+    default:
+    return ["document"];
+  }
+};

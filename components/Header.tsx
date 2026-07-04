@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react"
 import { useRouter } from "next/navigation";
 import FileUploader from "./FileUploader";
 
-const Header = () => {
+const Header = ({ ownerId, accountId } : { ownerId: string; accountId: string }) => {
     const router = useRouter();
 
     const handleLogout = async () => {
@@ -20,7 +20,7 @@ const Header = () => {
     <div className="flex items-center justify-between px-7 mt-6">
         {/* Search */}
         <div className="flex gap-4">
-            <FileUploader />
+            <FileUploader ownerId={ownerId} accountId={accountId} />
             <button className="cursor-pointer h-11 w-11 flex items-center justify-center gap-2 bg-froly/10 rounded-full"
                 onClick={handleLogout}
             >
