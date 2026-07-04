@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const Preview = ({ type, extension, url, classNames, imgClassNames}: {
     type: string;
     extension: string;
-    url: FileType | string;
+    url: string;
     classNames?: string;
     imgClassNames?: string;
 }) => {
