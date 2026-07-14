@@ -1,3 +1,4 @@
+import Card from "@/components/Card";
 import { getFiles } from "@/lib/appwrite/file.actions";
 import { getCurrentUser } from "@/lib/appwrite/user.actions";
 import { getFileTypeParams } from "@/lib/utils";
@@ -34,7 +35,7 @@ const Page = async ({
       <div className="flex flex-wrap gap-4.5 overflow-y-scroll h-144 no-scrollbar">
         {
           files?.rows?.map((file: Models.DefaultRow) => {
-            return <span key={file.$id}>{file.name}</span>
+            return <Card key={file.$id} file={file} fullName={currentUser.fullName} />
           })
         }
       </div>
