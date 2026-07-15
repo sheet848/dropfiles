@@ -14,3 +14,8 @@ export type IButtonLoadingProps = {
     label?: string;
     classNames?: string;
 };
+
+export type ActionItem = {
+    label: string;
+    value: string;
+};
