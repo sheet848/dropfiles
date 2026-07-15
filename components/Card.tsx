@@ -2,6 +2,7 @@ import { Models } from "node-appwrite"
 import Link from "next/link";
 import Preview from "./Preview";
 import { formatDateTime, getFileSize } from "@/lib/utils";
+import ActionDropdown from "./ActionDropdown";
 
 const Card = ({ file, fullName }: {file: Models.DefaultRow; fullName: string; }) => {
   return (
@@ -10,7 +11,7 @@ const Card = ({ file, fullName }: {file: Models.DefaultRow; fullName: string; })
             <Preview type={file.type} extension={file.extension} url={file.url} />
 
             <div className="flex flex-col items-end justify-between h-full">
-                <span>Action</span>
+                <ActionDropdown file={file} />
                 <span className="text-gray-500 font-medium text-sm">
                     { getFileSize(file.size) }
                 </span>
