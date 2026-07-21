@@ -19,3 +19,10 @@ export type ActionItem = {
     label: string;
     value: string;
 };
+
+export type RenameFile = {
+    fileId: string;
+    name: string;
+    extension: string;
+    path: string;
+};

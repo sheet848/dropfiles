@@ -8,6 +8,7 @@ import { constructFileUrl, getFileType, parseObj } from "../utils";
 import { appwriteConfig } from "./appwriteConfig";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "./user.actions";
+import { RenameFile } from "../types";
 
 // storage and databases => createAdminClient()
 // create the file in the storage -> bucketId, fileId, file
@@ -126,5 +127,44 @@ export const getFiles = async ({
         return parseObj(files);
     } catch (error) {
         console.log("Failed to retrive files", error);
+    }
+};
+
+export const renameFile = async ({ fileId, name, extension, path }: RenameFile) => {
+    const { databases } = await createAdminClient();
+
+    try {
+        const newFileName = `${name}.${extension}`;
+        const updatedFile = await databases.updateRow({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.filesCollectionId,
+            rowId: fileId,
+            data: {
+                name: newFileName,
+            },
+        });
+
+        revalidatePath(path);
+
+        return parseObj(updatedFile);
+    } catch (error) {
+        console.log("Failed to rename the file", error);
+    }
+};
+
+export const getFileOwnerDetails = async (ownerId: string) => {
+    const { databases } = await createAdminClient();
+
+    try {
+        const user = await databases.listRows({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.usersCollectionId,
+            queries: [Query.equal("$id", ownerId)],
+        });
+
+        return user.total > 0 ? parseObj(user.rows[0]) : null;
+
+    } catch (error) {
+        console.log("Failed to fetch owner details", error);
     }
 };
