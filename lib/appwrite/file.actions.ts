@@ -8,7 +8,7 @@ import { constructFileUrl, getFileType, parseObj } from "../utils";
 import { appwriteConfig } from "./appwriteConfig";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "./user.actions";
-import { RenameFile } from "../types";
+import { DeleteFile, RenameFile, ShareFile } from "../types";
 
 // storage and databases => createAdminClient()
 // create the file in the storage -> bucketId, fileId, file
@@ -168,3 +168,49 @@ export const getFileOwnerDetails = async (ownerId: string) => {
         console.log("Failed to fetch owner details", error);
     }
 };
+
+export const shareFile = async ({ fileId, emails, path }: ShareFile) => {
+    const { databases } = await createAdminClient();
+
+    try {
+        const updatedFile = await databases.updateRow({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.filesCollectionId,
+            rowId: fileId,
+            data: {
+                users: emails,
+            },
+        });
+
+        revalidatePath(path);
+
+        return parseObj(updatedFile);
+
+    } catch (error) {
+        console.log("Failed to share the file", error);
+    }
+};
+
+export const deleteFile = async ({ fileId, bucketFileId, path }: DeleteFile) => {
+    const { storage, databases } = await createAdminClient();
+
+    try {
+        const deletedFile = await databases.deleteRow({
+            databaseId: appwriteConfig.databaseId,
+            tableId: appwriteConfig.filesCollectionId,
+            rowId: fileId,
+        });
+
+        if (deletedFile) {
+            await storage.deleteFile({
+                bucketId: appwriteConfig.bucketId,
+                fileId: bucketFileId,
+            });
+        }
+
+        revalidatePath(path);
+        return parseObj({message: "File deleted successfully"})
+    } catch (error) {
+        console.log("Failed to delete the file", error);
+    }
+}

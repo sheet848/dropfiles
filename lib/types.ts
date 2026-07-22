@@ -26,3 +26,15 @@ export type RenameFile = {
     extension: string;
     path: string;
 };
+
+export type ShareFile = {
+    fileId: string;
+    emails: string[];
+    path: string;
+};
+
+export type DeleteFile = {
+    fileId: string;
+    bucketFileId: string;
+    path: string;
+};

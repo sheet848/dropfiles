@@ -2,7 +2,7 @@
 
 import { Models } from "node-appwrite"
 import FilePreview from "./FilePreview"
-import { formatDateTime, getFileSize } from "@/lib/utils"
+import { cn, formatDateTime, getFileSize } from "@/lib/utils"
 import { useCallback, useEffect, useState } from "react";
 import { getFileOwnerDetails } from "@/lib/appwrite/file.actions";
 
@@ -20,9 +20,11 @@ const FileDetails = ({ file } : { file: Models.DefaultRow }) => {
   }, [handleFetchOwnerDetails]);
 
   const renderItem = (label: string, value: string | number) => {
+    const upperCaseClass = label === "Creator" ? "" : "uppercase";
+
     return <div className="mt-4 flex gap-6">
             <span className="text-gray-500 font-medium w-20">{label}:</span>
-            <span className="uppercase font-medium text-gray-700">{value}</span>
+            <span className={cn(`font-medium text-gray-700`, upperCaseClass)}>{value}</span>
         </div>
   }
 
