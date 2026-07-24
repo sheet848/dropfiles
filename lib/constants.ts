@@ -82,3 +82,30 @@ export const ACTION_ITEMS = [
         iconBgColor: "bg-persimmon/10",
     },
 ];
+
+export const FILTER_TYPES = [
+    {
+        label: "Name (A-Z)",
+        value: "name-asc",
+    },
+    {
+        label: "Name (Z-A)",
+        value: "name-desc",
+    },
+    {
+        label: "Date created (Newest)",
+        value: "$createdAt-desc",
+    },
+    {
+        label: "Date created (Oldest)",
+        value: "$created-asc",
+    },
+    {
+        label: "Size (Highest)",
+        value: "size-desc",
+    },
+    {
+        label: "Size (Lowest)",
+        value: "size-asc",
+    },
+];
