@@ -1,4 +1,5 @@
 import Card from "@/components/Card";
+import Filter from "@/components/Filter";
 import { getFiles } from "@/lib/appwrite/file.actions";
 import { getCurrentUser } from "@/lib/appwrite/user.actions";
 import { getFileTypeParams } from "@/lib/utils";
@@ -27,7 +28,7 @@ const Page = async ({
       <div className="flex justify-between">
         <span className="font-semibold text-2xl capitalize">{type}</span>
         {/* Filter*/}
-        <span>Filter</span>
+        <Filter />
       </div>
       
       {/* Total Size */}
