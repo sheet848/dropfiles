@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { appwriteConfig } from "./appwrite/appwriteConfig";
+import { Models } from "node-appwrite";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -192,4 +193,14 @@ export const formatDateTime = (isoString: string) => {
   const year = date.getFullYear();
 
   return `${day} ${month} ${year}`;
+};
+
+export const getTotalFileSize = (files: Models.DefaultRow[]) => {
+  let total = 0;
+
+  files?.forEach((file: Models.DefaultRow) => {
+    total += file.size;
+  });
+
+  return getFileSize(total);
 };
