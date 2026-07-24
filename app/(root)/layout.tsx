@@ -7,6 +7,8 @@ import { getCurrentUser } from "@/lib/appwrite/user.actions";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Toaster } from "@/components/ui/sonner";
+import { getTotalFileSize } from "@/lib/utils";
+import { getFiles } from "@/lib/appwrite/file.actions";
 
 export const metadata: Metadata = {
     title: "DropFiles",
@@ -20,10 +22,13 @@ const Layout = async ({ children }: { children: React.ReactNode}) => {
         redirect("/auth");
     }
 
+    const files = await getFiles({ types: [], query: ""});
+    const totalSize = getTotalFileSize(files?.rows);
+
     return (
         <main className="flex h-screen bg-white">
             {/* todo: pass fullName and fileSize */}
-            <Sidebar fullName={user?.fullName} fileSize="52.2" />
+            <Sidebar fullName={user?.fullName} fileSize={totalSize} />
 
             <section className="flex h-full flex-1 flex-col">
                 <Header ownerId={user.$id} accountId={user.accountId} />

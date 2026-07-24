@@ -13,6 +13,9 @@ const Sidebar = ({ fullName, fileSize }: {
 }) => {
 
     const pathName = usePathname();
+    const fileSizeNum = parseFloat(fileSize);
+
+    console.log(fileSizeNum);
 
     return (
         <aside className="w-66 p-4 pt-8 bg-white pb-38">
@@ -42,7 +45,7 @@ const Sidebar = ({ fullName, fileSize }: {
                 <div className="bg-froly flex flex-col px-4 pt-2 pb-4 rounded-md">
                     <span className="text-white font-medium">Storage</span>
                     <span className="text-sm text-white">{fileSize} of 6GB</span>
-                    <Progress percentage={52.2} />
+                    <Progress percentage={fileSizeNum} />
                 </div>
 
                 <div>
